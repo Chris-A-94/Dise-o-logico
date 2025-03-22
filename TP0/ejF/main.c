@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 void getPartesEnteras(char*, int*, int*,char*);
-int validarRango(int,int);
-void imprimirHex(int,int);
+int validarRango(int,int,char);
+void imprimirHex(int,int,char);
 void getNumIngresado(char*);
 
 int main()
@@ -14,15 +14,14 @@ int main()
     getNumIngresado(numIngresado);
 
     getPartesEnteras(numIngresado,&parteEntera,&parteFraccionaria,&signo);
-    if(validarRango(parteEntera,parteFraccionaria))
+    if(validarRango(parteEntera,parteFraccionaria,signo))
     {
         printf("Fuera de rango.\n");
         return 0;
     }
 
-    printf("Signo: %c, Entero: %d, fraccionario: %d",signo,parteEntera,parteFraccionaria);
 
-    imprimirHex(parteEntera,parteFraccionaria);
+    imprimirHex(parteEntera,parteFraccionaria,signo);
 
     return 0;
 }
@@ -76,41 +75,47 @@ void getPartesEnteras(char* numIngresado, int* parteEntera, int* parteFraccionar
 
 }
 
-int validarRango(int entero,int fracc)
+int validarRango(int entero,int fracc,char signo)
 {
-    if(entero > 128)
-        return 0;
-    else if(entero = 128 && fracc > 0)
-        return 0;
+    if(fracc >= 9922)
+    {
+        printf("La parte fraccionaria debe ser menor a 0.9921875.\n");
+        return 1;
+    }
 
-    return 1;
+    if(signo == '+')
+    {
+       if(entero > 127)
+        {
+            printf("El numero positivo maximo es 127.\n");
+            return 1;
+        }
+    }
+    else
+    {
+       if(entero > 128)
+        {
+            printf("El numero negativo maximo es 128\n");
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
-void imprimirHex(int entero,int fracc)
+void imprimirHex(int entero,int fracc,char signo)
 {
-    char* misHex = "0123456789ABCDEF";
+    entero *= 256;
+    //el +5000 es para que redondee al numero mas cercano, en vez de simplemente quedarse siempre con la parte entera
+    //tipo, pasa 2.9 a 3, en vez de 2
+    fracc = (fracc * 256 + 5000 )/ 10000;
 
-    int hexEntero = 0;
-    int hexFracc = 0;
-    char numImpreso[10];
-    int i = 0;
-    while(entero != 0)
-    {
-        hexEntero = entero % 16;
-        entero /= 16;
-        numImpreso[i] = misHex[hexEntero];
-        i++;
-    }
-    numImpreso[i] = '.';
-    printf("\nParte entera en hex: %s",numImpreso);
-    char aux;
-    for(int j = 0; j < i; j++)
-        for(int k = i - 1; k >= i - j - 1; k--)
-        {
-            aux = numImpreso[j];
-            numImpreso[j] = numImpreso[k];
-            numImpreso[k] = aux;
-        }
-    printf("\nParte entera en hex: %s",numImpreso);
+
+    int impreso = entero + fracc;
+
+    if(signo == '+')
+       printf("\nNumero hexadecimal: 0x%04X",impreso);
+    else
+       printf("\nNumero hexadecimal: -0x%04X",impreso);
 
 }
