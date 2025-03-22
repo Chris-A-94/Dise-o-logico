@@ -4,27 +4,14 @@
 void getPartesEnteras(char*, int*, int*,char*);
 int validarRango(int,int);
 void imprimirHex(int,int);
+void getNumIngresado(char*);
 
 int main()
 {
     int parteEntera,parteFraccionaria;
     char signo;
     char numIngresado[10];
-
-    size_t sizeIngresado;
-
-    do
-    {
-       printf("Ingrese numero con formato estricto +eee.ffff o -eee.ffff: ");
-       fgets(numIngresado,sizeof(numIngresado),stdin);
-       sizeIngresado = strlen(numIngresado);
-       if(numIngresado[sizeIngresado - 1] == '\n')
-        {
-            numIngresado[sizeIngresado - 1] = '\0';
-            sizeIngresado--;
-        }
-
-    }while(!(numIngresado[0] == '+' || numIngresado[0] == '-') || sizeIngresado != 9);
+    getNumIngresado(numIngresado);
 
     getPartesEnteras(numIngresado,&parteEntera,&parteFraccionaria,&signo);
     if(validarRango(parteEntera,parteFraccionaria))
@@ -33,12 +20,39 @@ int main()
         return 0;
     }
 
-
     printf("Signo: %c, Entero: %d, fraccionario: %d",signo,parteEntera,parteFraccionaria);
 
     imprimirHex(parteEntera,parteFraccionaria);
 
     return 0;
+}
+
+void getNumIngresado(char* numIngresado)
+{
+    printf("\nIngrese numero en formato +eee.ffff o -eee.ffff: ");
+    fgets(numIngresado,10*sizeof(char),stdin);
+
+    if(numIngresado[9] == '\n')
+        numIngresado[9] = '\0';
+
+    int cumple = 1;
+    if(!(numIngresado[0] == '+' || numIngresado[0] == '-') || !(numIngresado[4] == '.' || numIngresado[4] == ','))
+        cumple = 0;
+    for(int i = 1; i < 9; i++)
+    {
+        if(!cumple)
+            break;
+        if(i == 4)
+            continue;
+        if(numIngresado[i] < 48 || numIngresado[i] > 57)
+            cumple = 0;
+    }
+    if(!cumple)
+    {
+        printf("\nPor favor, asegurese de ingresar un numero con el simbolo negativo o positivo primero, tres enteros, coma, y cuatro decimales.");
+        getNumIngresado(numIngresado);
+    }
+
 }
 
 void getPartesEnteras(char* numIngresado, int* parteEntera, int* parteFraccionaria,char* signo)
