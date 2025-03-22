@@ -114,8 +114,13 @@ void imprimirHex(int entero,int fracc,char signo)
     int impreso = entero + fracc;
 
     if(signo == '+')
-       printf("\nNumero hexadecimal: 0x%04X",impreso);
+       printf("\nNumero hexadecimal: 0x%04X",impreso & 0xFFFF);
     else
-       printf("\nNumero hexadecimal: -0x%04X",impreso);
+    {
+        printf("\nNumero hexadecimal: -0x%04X",impreso& 0xFFFF);
+        unsigned int impresoCA2 = (unsigned int)(-impreso);
+        printf("\nNumero hexadecimal en CA2: 0x%04X",impresoCA2 & 0xFFFF );
+    }
+
 
 }

@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1742671820 source:c:\users\usuario\desktop\folders\facultad\1er cuatri 2025\diseño logico\tp0\ejg\main.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+
