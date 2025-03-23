@@ -1,43 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 
-void getNumIngresado(char*);
+void getNumIngresado(int*);
+char procesarNum(unsigned int*,unsigned int*, int);
+void imprimirNumero(char,unsigned int, unsigned int);
 
 int main()
 {
-    int parteEntera,parteFraccionaria;
+    unsigned int parteEntera,parteFraccionaria;
     char signo;
-    char numIngresado[5];
-    getNumIngresado(numIngresado);
-    printf("\n Procesado: %s",numIngresado);
+    int numIngresado;
+    getNumIngresado(&numIngresado);
+    signo = procesarNum(&parteEntera,&parteFraccionaria,numIngresado);
+    printf("\n Num ingresado: %X",numIngresado);
+
+    printf("\nParte entera: %X, parte fraccionaria: %X, signo: %c",parteEntera,parteFraccionaria,signo);
+
+    imprimirNumero(signo,parteEntera,parteFraccionaria);
+
     return 0;
 }
 
-void getNumIngresado(char* numIngresado)
+void getNumIngresado(int* numIngresado)
 {
-    printf("Ingrese un numero en formato 0xHHHH: 0x");
-    fgets(numIngresado,5*sizeof(char),stdin);
-
-    if(numIngresado[4] == '\n')
-        numIngresado[4] = '\0';
-
-    int cumple = 1;
-    for(int i = 0; i < 4; i++)
+    do
     {
-        numIngresado[i] = toupper(numIngresado[i]);
-        if(!cumple)
-            break;
-        if(!( (numIngresado[i] >= '0' && numIngresado[i] <= '9') || (numIngresado[i] >= 'A' && numIngresado[i] <= 'F')
-             ))
-            cumple = 0;
-    }
-    if(!cumple)
-    {
-        printf("\nError, los numeros deben ser hexadecimales.");
-        getNumIngresado(numIngresado);
-    }
-
-
+        printf("Ingrese un numero en formato 0xHHHH: 0x");
+        scanf("%x",numIngresado);
+    }while(*numIngresado < 0 || * numIngresado > 0xFFFF );
 
 }
+
+char procesarNum(unsigned int* entera,unsigned int* fracc,int numIngresado)
+{
+    char signo;
+    int bitSignificativo = numIngresado & 0x8000;
+    if(bitSignificativo)
+        signo = '-';
+    else
+        signo = '+';
+    *entera = numIngresado & 0x7F00;
+    *entera = *entera >> 8;
+    *fracc = numIngresado & 0x00FF;
+
+    return signo;
+
+}
+
+void imprimirNumero(char signo,unsigned int entero, unsigned int fracc)
+{
+    fracc *= 10000;
+    fracc /= 256;
+    int ifNegativo;
+    //Iba a chequear rangos aca, pero con formato 0xHHHH es imposible ingresar algo fuera de rango.
+
+    if(signo == '+')
+        printf("\nSu numero es %c%d.%04d",signo,entero,fracc);
+    else
+    {
+        ifNegativo = -(int)entero;
+        printf("\nSu numero es %d.%04d",ifNegativo,fracc);
+    }
+}
+
+
