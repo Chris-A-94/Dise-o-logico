@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 int getNumIngresado(int*);
 char procesarNum(unsigned int*,unsigned int*, int);
@@ -41,6 +42,15 @@ int getNumIngresado(int* numIngresado)
 
         entryStream[4] = '\0';
 
+        if (strlen(entryStream) > 0 && getchar() != '\n')
+        {
+            printf("Error: Demasiados caracteres. El formato de entrada es HHHH.\n");
+            while (getchar() != '\n')
+                continue;
+            continue;
+        }
+
+
         if (strlen(entryStream) != 4)
         {
             printf("Error: El formato de entrada es HHHH.\n");
@@ -57,7 +67,7 @@ int getNumIngresado(int* numIngresado)
         }
         if(!booleano)
         {
-            printf("\nIngrese digitos del 0 - 9 y letras del A - F");
+            printf("\nIngrese digitos del 0 - 9 y letras del A - F.\n");
             continue;
         }
         else
@@ -70,7 +80,6 @@ int getNumIngresado(int* numIngresado)
 
     if(booleano)
     {
-        printf("Conversion exitosa.\n Numero hexa ingresado: %X",*numIngresado);
         return 0;
     }
     else
@@ -84,14 +93,17 @@ char procesarNum(unsigned int* entera,unsigned int* fracc,int numIngresado)
 {
     char signo;
     int bitSignificativo = numIngresado & 0x8000;
-    if(bitSignificativo)
-        signo = '-';
-    else
-        signo = '+';
     *entera = numIngresado & 0x7F00;
     *entera = *entera >> 8;
-    *fracc = numIngresado & 0x00FF;
+    if(bitSignificativo)
+    {
+        signo = '-';
+        *entera = -((int)(0x80 - *entera));
+    }
 
+    else
+        signo = '+';
+    *fracc = numIngresado & 0x00FF;
     return signo;
 
 }
@@ -100,15 +112,13 @@ void imprimirNumero(char signo,unsigned int entero, unsigned int fracc)
 {
     fracc *= 10000;
     fracc /= 256;
-    int ifNegativo;
     //Iba a chequear rangos aca, pero con formato 0xHHHH es imposible ingresar algo fuera de rango.
 
     if(signo == '+')
         printf("\nSu numero es %c%d.%04d",signo,entero,fracc);
     else
     {
-        ifNegativo = -(int)entero;
-        printf("\nSu numero es %d.%04d",ifNegativo,fracc);
+        printf("\nSu numero es %d.%04d",entero,fracc);
     }
 }
 
