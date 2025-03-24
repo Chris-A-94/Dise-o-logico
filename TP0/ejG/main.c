@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
-void getNumIngresado(int*);
+int getNumIngresado(int*);
 char procesarNum(unsigned int*,unsigned int*, int);
 void imprimirNumero(char,unsigned int, unsigned int);
 
@@ -10,25 +11,73 @@ int main()
     unsigned int parteEntera,parteFraccionaria;
     char signo;
     int numIngresado;
-    getNumIngresado(&numIngresado);
-    signo = procesarNum(&parteEntera,&parteFraccionaria,numIngresado);
-    printf("\n Num ingresado: %X",numIngresado);
 
-    printf("\nParte entera: %X, parte fraccionaria: %X, signo: %c",parteEntera,parteFraccionaria,signo);
+    if(getNumIngresado(&numIngresado))
+        return 1;
+
+    signo = procesarNum(&parteEntera,&parteFraccionaria,numIngresado);
 
     imprimirNumero(signo,parteEntera,parteFraccionaria);
 
     return 0;
 }
 
-void getNumIngresado(int* numIngresado)
+int getNumIngresado(int* numIngresado)
 {
+    char entryStream[5];
+    int booleano;
     do
     {
+        booleano = 1;
         printf("Ingrese un numero en formato 0xHHHH: 0x");
-        scanf("%x",numIngresado);
-    }while(*numIngresado < 0 || * numIngresado > 0xFFFF );
 
+        if(scanf("%04s",entryStream) != 1)
+        {
+            printf("Formato erroneo. Reingresar.\n");
+            while(getchar() != '\n')
+                continue;
+            continue;
+        }
+
+        entryStream[4] = '\0';
+
+        if (strlen(entryStream) != 4)
+        {
+            printf("Error: El formato de entrada es HHHH.\n");
+            continue;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (!isxdigit(entryStream[i]))
+            {
+                booleano = 0;
+                break;
+            }
+        }
+        if(!booleano)
+        {
+            printf("\nIngrese digitos del 0 - 9 y letras del A - F");
+            continue;
+        }
+        else
+            break;
+
+    }while(1);
+
+
+    booleano = sscanf(entryStream, "%X", numIngresado);
+
+    if(booleano)
+    {
+        printf("Conversion exitosa.\n Numero hexa ingresado: %X",*numIngresado);
+        return 0;
+    }
+    else
+    {
+        printf("Error critico.");
+        return 1;
+    }
 }
 
 char procesarNum(unsigned int* entera,unsigned int* fracc,int numIngresado)
