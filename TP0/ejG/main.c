@@ -118,7 +118,17 @@ void imprimirNumero(char signo,unsigned int entero, unsigned int fracc)
         printf("\nSu numero es %c%d.%04d",signo,entero,fracc);
     else
     {
-        printf("\nSu numero es %d.%04d",entero,fracc);
+        signo = ' ';
+
+        if((fracc != 0)&&(entero!=(-128)))
+        {
+           entero++;
+           fracc = 10000 - fracc;
+        }
+
+        if(entero == 0)
+            signo = '-';
+        printf("\nSu numero es %c%d.%04d",signo,entero,fracc);
     }
 }
 
